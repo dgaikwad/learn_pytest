@@ -1,0 +1,148 @@
+
+## Execute a Subset of test cases from the test Suites
+
+
+
+In a real life scenario, we will have multiple test files, directories and each file will have a number of tests.
+Tests will cover various modules and functionalities. Suppose, we want to run only a specific set of tests; how do we go about it?
+Pytest provides two ways to run the subset of the test suite.
+
+1. Select tests to run based on substring matching of test names.
+2. Select tests groups to run based on the markers applied.
+
+1. Select tests to run based on substring matching of test names.
+
+To execute the tests containing a string in its name we can use the following syntax:
+pytest -k <substring> -v
+-k <substring> represents the substring to search for in the test names.
+Now, run the following command:
+
+Example:
+
+
+[~]$ cat  testfile.py
+import pytest
+
+@pytest.mark.os
+def test_os_packages():
+    print("test_os")
+
+@pytest.mark.os
+def test_os_info():
+    print("test_os_info")
+
+def test_os_final():
+    print("test_os_final")
+
+def test_hardware():
+    print("test_hardware")
+
+[~]$
+
+[~]$ pytest -vs testfile.py
+============================================================================================================ test session starts =============================================================================================================
+platform linux -- Python 3.9.9, pytest-6.2.4, py-1.10.0, pluggy-0.13.1 -- /usr/bin/python3
+cachedir: .pytest_cache
+rootdir: /home/dgaikwad
+plugins: subtests-0.5.0
+collected 4 items
+
+testfile.py::test_os_packages test_os
+PASSED
+testfile.py::test_os_info test_os_info
+PASSED
+testfile.py::test_os_final test_os_final
+PASSED
+testfile.py::test_hardware test_hardware
+PASSED
+
+============================================================================================================== warnings summary ==============================================================================================================
+testfile.py:3
+  /home/dgaikwad/testfile.py:3: PytestUnknownMarkWarning: Unknown pytest.mark.os - is this a typo?  You can register custom marks to avoid this warning - for details, see https://docs.pytest.org/en/stable/mark.html
+    @pytest.mark.os
+
+testfile.py:7
+  /home/dgaikwad/testfile.py:7: PytestUnknownMarkWarning: Unknown pytest.mark.os - is this a typo?  You can register custom marks to avoid this warning - for details, see https://docs.pytest.org/en/stable/mark.html
+    @pytest.mark.os
+
+-- Docs: https://docs.pytest.org/en/stable/warnings.html
+======================================================================================================= 4 passed, 2 warnings in 0.01s ========================================================================================================
+[~]$
+
+
+
+
+1. Now running code with substring by passing -m parameter
+
+
+[~]$ pytest -vs testfile.py -k os
+============================================================================================================ test session starts =============================================================================================================
+platform linux -- Python 3.9.9, pytest-6.2.4, py-1.10.0, pluggy-0.13.1 -- /usr/bin/python3
+cachedir: .pytest_cache
+rootdir: /home/dgaikwad
+plugins: subtests-0.5.0
+collected 4 items / 1 deselected / 3 selected
+
+testfile.py::test_os_packages test_os
+PASSED
+testfile.py::test_os_info test_os_info
+PASSED
+testfile.py::test_os_final test_os_final
+PASSED
+
+============================================================================================================== warnings summary ==============================================================================================================
+testfile.py:3
+  /home/dgaikwad/testfile.py:3: PytestUnknownMarkWarning: Unknown pytest.mark.os - is this a typo?  You can register custom marks to avoid this warning - for details, see https://docs.pytest.org/en/stable/mark.html
+    @pytest.mark.os
+
+testfile.py:7
+  /home/dgaikwad/testfile.py:7: PytestUnknownMarkWarning: Unknown pytest.mark.os - is this a typo?  You can register custom marks to avoid this warning - for details, see https://docs.pytest.org/en/stable/mark.html
+    @pytest.mark.os
+
+-- Docs: https://docs.pytest.org/en/stable/warnings.html
+================================================================================================ 3 passed, 1 deselected, 2 warnings in 0.01s =================================================================================================
+[~]$
+
+
+
+2. Select tests groups to run based on the markers applied.
+
+Pytest allows us to use markers on test functions. Markers are used to set various features/attributes to test functions.
+Pytest provides many inbuilt markers such as xfail, skip and parametrize. Apart from that, users can create their own marker names. Markers
+are applied on the tests using the syntax given below:
+
+@pytest.mark.<markername>
+To use markers, we have to import pytest module in the test file. We can define our own marker names to the tests and run the tests having those marker names.
+
+To run the marked tests, we can use the following syntax:
+pytest -m <markername> -v -m <markername>
+represents the marker name of the tests to be executed.
+
+Now run tests using marker and this will collect and execute tests only based on attached marker.
+
+[~]$ pytest -vs testfile.py -m os
+============================================================================================================ test session starts =============================================================================================================
+platform linux -- Python 3.9.9, pytest-6.2.4, py-1.10.0, pluggy-0.13.1 -- /usr/bin/python3
+cachedir: .pytest_cache
+rootdir: /home/dgaikwad
+plugins: subtests-0.5.0
+collected 4 items / 2 deselected / 2 selected
+
+testfile.py::test_os_packages test_os
+PASSED
+testfile.py::test_os_info test_os_info
+PASSED
+
+============================================================================================================== warnings summary ==============================================================================================================
+testfile.py:3
+  /home/dgaikwad/testfile.py:3: PytestUnknownMarkWarning: Unknown pytest.mark.os - is this a typo?  You can register custom marks to avoid this warning - for details, see https://docs.pytest.org/en/stable/mark.html
+    @pytest.mark.os
+
+testfile.py:7
+  /home/dgaikwad/testfile.py:7: PytestUnknownMarkWarning: Unknown pytest.mark.os - is this a typo?  You can register custom marks to avoid this warning - for details, see https://docs.pytest.org/en/stable/mark.html
+    @pytest.mark.os
+
+-- Docs: https://docs.pytest.org/en/stable/warnings.html
+================================================================================================ 2 passed, 2 deselected, 2 warnings in 0.01s =================================================================================================
+[~]$
+
